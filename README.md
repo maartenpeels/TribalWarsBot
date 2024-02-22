@@ -15,8 +15,8 @@ This is a bot for the game Tribal Wars. It is written in Python and uses web req
 
 ## Installation
 
-1. Install python `3.11` or set up a virtual environment with python
-2. Clone the repository
+1. Clone the repository
+2. Install python `3.11` or set up a virtual environment with python
 3. Install the required packages with `python -m pip install -r requirements.txt`
 4. Run the bot with `python main.py`
 

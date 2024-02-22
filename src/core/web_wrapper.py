@@ -139,8 +139,12 @@ class WebWrapper:
 
         return response
 
-    def get_screen(self, screen):
-        response = self.get_url(f"game.php?screen={screen}")
+    def get_screen(self, screen, params=None):
+        url = f"game.php?screen={screen}"
+        if params:
+            url += "&" + "&".join([f"{key}={value}" for key, value in params.items()])
+
+        response = self.get_url(url)
 
         sleep_min = self.config.get("bot.delays.request.min")
         sleep_max = self.config.get("bot.delays.request.max")
