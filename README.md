@@ -1,5 +1,14 @@
 # TribalWarsBot
 
+## NOTICE
+
+This project is in it's early stages and is not yet functional. It is not recommended to use this bot for now.
+
+## Disclaimer
+
+I am not responsible for any damage that is caused by using this bot. This bot is not intended to be used for cheating
+or any other malicious purposes. It is intended to be used for educational purposes only.
+
 ## Description
 
 This is a bot for the game Tribal Wars. It is written in Python and uses web requests to interact with the game.
