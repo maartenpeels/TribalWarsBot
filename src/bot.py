@@ -25,6 +25,11 @@ class Bot:
 
         self.villages = self.get_villages()
 
+        while True:
+            for village in self.villages:
+                village.run()
+                return  # TODO: Remove this line
+
     def get_villages(self):
         logger.info("Getting villages")
         result = self.web.get_screen("overview_villages")
@@ -54,7 +59,7 @@ class Bot:
         self.config.set("villages", config_villages)
 
         # Create Village objects
-        return [Village(village_config, self.web) for village_config in config_villages]
+        return [Village(village_config, self.config, self.web) for village_config in config_villages]
 
     @staticmethod
     def setup_environment():
