@@ -10,3 +10,5 @@ village_template:
   id: 0
   name: "Village"
   manage: false
+  strategy:
+    building: "purple_predator"
