@@ -20,6 +20,12 @@ class BuildingData:
     storage: int
     wall: int
 
+    def get_level(self, building_name):
+        try:
+            return getattr(self, building_name)
+        except AttributeError:
+            raise AttributeError(f"Building {building_name} does not exist")
+
 
 @dataclass
 class VillageData:
