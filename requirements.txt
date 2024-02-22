@@ -1,0 +1,4 @@
+coloredlogs~=15.0.1
+requests~=2.31.0
+rich~=13.7.0
+ruamel.yaml~=0.18.6

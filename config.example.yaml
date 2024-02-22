@@ -1,0 +1,12 @@
+version: 1
+bot:
+  log_level: "INFO"
+  auto_manage_new_villages: false
+  delays:
+    request:
+      min: 0.5
+      max: 1
+village_template:
+  id: 0
+  name: "Village"
+  manage: false
