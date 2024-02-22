@@ -1,6 +1,7 @@
 import copy
 import logging
 
+from src.core.config import Config
 from src.core.file_manager import FileManager
 from src.core.input import Input
 from src.core.page_parser import PageParser
@@ -13,7 +14,7 @@ logger = logging.getLogger("Bot")
 class Bot:
     villages: [Village] = []
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         self.config = config
         self.web = WebWrapper(self.config)
 

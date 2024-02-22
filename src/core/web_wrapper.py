@@ -6,6 +6,7 @@ import time
 
 import requests
 
+from src.core.config import Config
 from src.core.file_manager import FileManager
 from src.core.input import Input
 
@@ -19,7 +20,7 @@ class WebWrapper:
         "Upgrade-Insecure-Requests": "1",
     }
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         """Initialize the WebWrapper with the config and a requests session."""
         self.config = config
         self.web = requests.session()

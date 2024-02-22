@@ -2,7 +2,7 @@ import html
 import json
 import re
 
-from src.models.village import VillageData
+from src.model.village import VillageData
 
 
 class PageParser:
