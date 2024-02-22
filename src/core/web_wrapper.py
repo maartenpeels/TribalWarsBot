@@ -13,12 +13,14 @@ logger = logging.getLogger("WebWrapper")
 
 
 class WebWrapper:
+    """Wrapper for the requests library to handle the web requests and cookies."""
     last_h = None
     base_headers = {
         "Upgrade-Insecure-Requests": "1",
     }
 
     def __init__(self, config):
+        """Initialize the WebWrapper with the config and a requests session."""
         self.config = config
         self.web = requests.session()
         self.base_url = f"https://{self.config.get('web.server')}.{self.config.get('web.domain')}"
@@ -30,6 +32,7 @@ class WebWrapper:
         self.load_cookies()
 
     def is_cookie_valid(self):
+        """Check if the current session cache is valid. If not, refresh the cookies."""
         response = self.get_screen("overview")
         if "game.php" in response.url:
             return True
@@ -39,6 +42,7 @@ class WebWrapper:
         return False
 
     def load_cookies(self):
+        """Load the cookies from the cookies.json file. If the cookies are not valid, refresh them."""
         cookies_data = FileManager.load_json_file("data/cookies.json")
 
         if cookies_data:
@@ -53,6 +57,7 @@ class WebWrapper:
         FileManager.save_json_file("data/cookies.json", json.dumps(cookies))
 
     def refresh_cookies(self):
+        """Refresh the cookies by asking for the new cookie string and saving it to the cookies.json file."""
         cookies = self.ask_for_cookies()
         self.web.cookies.update(cookies)
 
@@ -63,6 +68,7 @@ class WebWrapper:
 
     @staticmethod
     def ask_for_cookies():
+        """Ask for the cookie string and parse it into a dictionary."""
         cookie_str = Input.ask_string("Enter cookie string", example="cookie1=value1; cookie2=value2")
         cookies = {}
 
@@ -74,6 +80,7 @@ class WebWrapper:
         return cookies
 
     def get_base_headers(self):
+        """Get the base headers for the requests."""
         headers = self.base_headers.copy()
         headers.update({
             "Origin": f"{self.base_url}/game.php",
@@ -82,8 +89,10 @@ class WebWrapper:
         return headers
 
     def update_after_request(self, response):
+        """Post process the response to update the CSRF-Token, headers and last_h."""
         csrf_token = re.search('<meta content="(.+?)" name="csrf-token"', response.text)
         if csrf_token:
+            logger.debug(f"Updating CSRF-Token")
             self.base_headers.update({
                 "X-CSRF-Token": csrf_token.group(1),
             })
@@ -101,6 +110,7 @@ class WebWrapper:
 
     @staticmethod
     def check_captcha(response):
+        """Check if the response contains a captcha. If so, wait for the user to solve it."""
         if 'data-bot-protect="forced"' in response.text:
             logger.warning("Captcha detected, press any key when captcha is solved")
             Input.wait_for_input()
@@ -108,6 +118,8 @@ class WebWrapper:
         return False
 
     def request(self, method, url, **kwargs):
+        """Make a request with the given method, url and kwargs. If the status code is not 200, return None. If the
+        session expired, refresh the cookies and make the request again."""
         logger.debug(f"Requesting {method} {url} with {kwargs}")
 
         response = self.web.request(method, url, **kwargs)
@@ -124,6 +136,9 @@ class WebWrapper:
         return response
 
     def get_url(self, url, headers=None):
+        """Make a GET request to the given url with the given headers. If the response contains a captcha, wait for the
+        user to solve it. If the response status code is not 200, return None. If the session expired, refresh the
+        cookies and make the request again."""
         full_url = f"{self.base_url}/{url}"
         base_headers = self.get_base_headers()
 
@@ -140,6 +155,9 @@ class WebWrapper:
         return response
 
     def get_screen(self, screen, params=None):
+        """Make a GET request to the game.php with the given screen and params. If the response contains a captcha, wait
+        for the user to solve it. If the response status code is not 200, return None. If the session expired, refresh
+        the cookies and make the request again."""
         url = f"game.php?screen={screen}"
         if params:
             url += "&" + "&".join([f"{key}={value}" for key, value in params.items()])

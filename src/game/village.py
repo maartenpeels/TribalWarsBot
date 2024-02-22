@@ -34,4 +34,4 @@ class Village:
     def get_data(self):
         logger.info("Getting village data")
         result = self.web.get_screen("overview_village", params={"village": self.village_id})
-        return PageParser.get_village_data(result)
+        return PageParser.get_village_data_from_village_overview(result)

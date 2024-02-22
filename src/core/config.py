@@ -7,10 +7,12 @@ logger = logging.getLogger("Config")
 
 
 class Config:
+    """Class for handling the config file."""
     config_file = "config.yaml"
     config_file_example = "config.example.yaml"
 
     def __init__(self):
+        """Load the config file or create a new one if it doesn't exist."""
         if FileManager.path_exists(self.config_file):
             logger.info("Loading config file")
             self.config = self.load_config()
@@ -19,6 +21,7 @@ class Config:
             self.config = self.create_config()
 
     def load_config(self):
+        """Load the config file and update it if it's outdated."""
         old_config = FileManager.load_yaml_file(self.config_file)
         new_config = FileManager.load_yaml_file(self.config_file_example)
 
@@ -30,6 +33,7 @@ class Config:
         return old_config
 
     def update_config(self, old_config, new_config):
+        """Update the config file with new values."""
         for key, value in new_config.items():
             if key not in old_config:
                 old_config[key] = value
@@ -41,6 +45,7 @@ class Config:
         return old_config
 
     def create_config(self):
+        """Create a new config file."""
         config = FileManager.load_yaml_file(self.config_file_example)
 
         config.update({
@@ -57,6 +62,7 @@ class Config:
         return config
 
     def get(self, path, default=None):
+        """Get a value from the config file. If the value doesn't exist, return the default value or a KeyError."""
         keys = path.split('.')
         value = self.config
         for key in keys:
@@ -68,6 +74,7 @@ class Config:
         return value
 
     def set(self, path, value):
+        """Set a value in the config file. If the path doesn't exist, create it."""
         keys = path.split('.')
         config = self.config
         for key in keys[:-1]:
