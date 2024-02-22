@@ -6,11 +6,14 @@ from src.core.events import publish_event, Event
 from src.core.page_parser import PageParser
 from src.core.web_wrapper import WebWrapper
 from src.game.managers.building_manager import BuildingManager
+from src.model.village import VillageData
 
 logger = logging.getLogger("Village")
 
 
 class Village:
+    village_data: VillageData = None
+
     def __init__(self, village_config, config: Config, web: WebWrapper):
         self.config = config
         self.village_config = village_config
@@ -23,12 +26,10 @@ class Village:
 
         self.building_manager = BuildingManager(self.village_id, self.village_name, self.config, self.web)
 
-        self.village_data = self.get_data()
-        self.log_info()
-
     def run(self):
         logger.info("Starting run")
-        self.get_data()
+        self.village_data = self.get_data()
+        self.log_info()
         self.building_manager.run()
 
     def log_info(self):

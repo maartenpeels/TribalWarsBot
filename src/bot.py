@@ -5,6 +5,7 @@ from src.core.config import Config
 from src.core.file_manager import FileManager
 from src.core.input import Input
 from src.core.page_parser import PageParser
+from src.core.time_utils import TimeUtils
 from src.core.web_wrapper import WebWrapper
 from src.game.village import Village
 
@@ -28,7 +29,13 @@ class Bot:
         while True:
             for village in self.villages:
                 village.run()
-                return  # TODO: Remove this line
+                sleep_time_village = self.config.get("bot.delays.between_villages", 5)
+                logger.info(f"Sleeping for {sleep_time_village} seconds")
+                TimeUtils.sleep(sleep_time_village)
+
+            sleep_time_runs = self.config.get("bot.delays.between_runs", 180)
+            logger.info(f"Sleeping for {sleep_time_runs} seconds")
+            TimeUtils.sleep(sleep_time_runs)
 
     def get_villages(self):
         logger.info("Getting villages")

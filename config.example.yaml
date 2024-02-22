@@ -3,9 +3,16 @@ bot:
   log_level: "INFO"
   auto_manage_new_villages: false
   delays:
+    between_villages: 5
+    between_runs: 180
     request:
       min: 0.5
       max: 1
+building_manager:
+  queue_size: 2
+  lookahead: 2
+  upgrade_enabled: true
+  finish_enabled: true
 village_template:
   id: 0
   name: "Village"

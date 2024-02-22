@@ -119,8 +119,7 @@ class WebWrapper:
         return False
 
     def request(self, method, url, **kwargs):
-        """Make a request with the given method, url and kwargs. If the status code is not 200, return None. If the
-        session expired, refresh the cookies and make the request again."""
+        """Make a request with the given method, url and kwargs."""
         logger.debug(f"Requesting {method} {url} with {kwargs}")
 
         response = self.web.request(method, url, **kwargs)
@@ -137,9 +136,7 @@ class WebWrapper:
         return response
 
     def get_url(self, url, headers=None):
-        """Make a GET request to the given url with the given headers. If the response contains a captcha, wait for the
-        user to solve it. If the response status code is not 200, return None. If the session expired, refresh the
-        cookies and make the request again."""
+        """Make a GET request to the given url with the given headers."""
         full_url = f"{self.base_url}/{url}"
         base_headers = self.get_base_headers()
 
@@ -148,17 +145,15 @@ class WebWrapper:
 
         response = self.request("GET", full_url, headers=base_headers)
         self.update_after_request(response)
-        was_captcha = self.check_captcha(response)
 
+        was_captcha = self.check_captcha(response)
         if was_captcha:
             return self.get_url(url, headers)
 
         return response
 
     def get_screen(self, screen, params=None):
-        """Make a GET request to the game.php with the given screen and params. If the response contains a captcha, wait
-        for the user to solve it. If the response status code is not 200, return None. If the session expired, refresh
-        the cookies and make the request again."""
+        """Make a GET request to the game.php with the given screen and params."""
         url = f"game.php?screen={screen}"
         if params:
             url += "&" + "&".join([f"{key}={value}" for key, value in params.items()])
@@ -170,5 +165,45 @@ class WebWrapper:
         sleep = random.uniform(sleep_min, sleep_max)
         logger.debug(f"Sleeping for {sleep} seconds")
         time.sleep(sleep)
+
+        return response
+
+    def ajax_post_action(self, village_id, action, data):
+        url = f"game.php?village={village_id}&ajaxaction={action}&type=main&screen=main"
+        headers = self.get_base_headers().copy()
+        headers.update({
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            'tribalwars-ajax': '1',
+        })
+
+        response = self.request("POST", f"{self.base_url}/{url}", headers=self.get_base_headers(), data=data)
+        self.update_after_request(response)
+
+        was_captcha = self.check_captcha(response)
+        if was_captcha:
+            return self.ajax_post_action(village_id, action, data)
+
+        return response
+
+    def ajax_get_action(self, village_id, action, params=None):
+        # ?village=16278&screen=main&ajaxaction=build_order_reduce&h=2e6414d4&id=3997891&destroy=0
+        url = f"game.php?village={village_id}&ajaxaction={action}&screen=main"
+        if params:
+            url += "&" + "&".join([f"{key}={value}" for key, value in params.items()])
+
+        headers = self.get_base_headers().copy()
+        headers.update({
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            'tribalwars-ajax': '1',
+        })
+
+        response = self.request("GET", f"{self.base_url}/{url}", headers=self.get_base_headers())
+        self.update_after_request(response)
+
+        was_captcha = self.check_captcha(response)
+        if was_captcha:
+            return self.ajax_get_action(village_id, action, params)
 
         return response

@@ -38,7 +38,6 @@ iron:7
 wall:2
 farm:2
 farm:3
-storage:3
 farm:4
 storage:4
 barracks:3
@@ -111,7 +110,6 @@ snob:1
 barracks:15
 wall:20
 snob:2
-smith:15
 farm:22
 storage:20
 stable:15
