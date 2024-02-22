@@ -61,6 +61,27 @@ class Config:
         FileManager.save_yaml_file(self.config_file, config)
         return config
 
+    def get_village(self, village_id, path, default=None):
+        """Get a village from the config file."""
+        villages = self.get("villages")
+        value = None
+        for village in villages:
+            if village["id"] == village_id:
+                value = village
+
+        if value is None:
+            raise KeyError(f"Village with id {village_id} not found in config")
+
+        keys = path.split('.')
+        for key in keys:
+            if key not in value:
+                if default is not None:
+                    return default
+                raise KeyError(f"Path {path} not found in village({village_id}) config (missing key {key})")
+            value = value[key]
+
+        return value
+
     def get(self, path, default=None):
         """Get a value from the config file. If the value doesn't exist, return the default value or a KeyError."""
         keys = path.split('.')
