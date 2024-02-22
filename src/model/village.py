@@ -20,6 +20,12 @@ class BuildingData:
     storage: int
     wall: int
 
+    def get_level(self, building_name):
+        try:
+            return getattr(self, building_name)
+        except AttributeError:
+            raise AttributeError(f"Building {building_name} does not exist")
+
 
 @dataclass
 class VillageData:
@@ -55,7 +61,7 @@ class VillageData:
     def from_json(data):
         json_data = data.copy()
 
-        # Convert strings to ints for building values
         json_data['buildings'] = {key: int(value) for key, value in json_data['buildings'].items()}
+        json_data["buildings"] = BuildingData(**json_data["buildings"])
 
         return VillageData(**json_data)

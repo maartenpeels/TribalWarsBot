@@ -1,13 +1,21 @@
 import logging
 import math
 
+from src.core.config import Config
+from src.core.events import publish_event, Event
 from src.core.page_parser import PageParser
+from src.core.web_wrapper import WebWrapper
+from src.game.managers.building_manager import BuildingManager
+from src.model.village import VillageData
 
 logger = logging.getLogger("Village")
 
 
 class Village:
-    def __init__(self, village_config, web):
+    village_data: VillageData = None
+
+    def __init__(self, village_config, config: Config, web: WebWrapper):
+        self.config = config
         self.village_config = village_config
         self.village_id = village_config["id"]
         self.village_name = village_config["name"]
@@ -16,8 +24,13 @@ class Village:
         global logger
         logger = logging.getLogger(f"Village \"{self.village_config['name']}\"")
 
+        self.building_manager = BuildingManager(self.village_id, self.village_name, self.config, self.web)
+
+    def run(self):
+        logger.info("Starting run")
         self.village_data = self.get_data()
         self.log_info()
+        self.building_manager.run()
 
     def log_info(self):
         wood_prod_hour = math.floor(self.village_data.wood_prod * 60 * 60)
@@ -32,6 +45,8 @@ class Village:
         logger.info(f"Max storage: {self.village_data.storage_max}")
 
     def get_data(self):
-        logger.info("Getting village data")
+        logger.debug("Getting village data")
         result = self.web.get_screen("overview_village", params={"village": self.village_id})
-        return PageParser.get_village_data_from_village_overview(result)
+        village_data = PageParser.get_village_data_from_village_overview(result)
+        publish_event(Event.VILLAGE_DATA_UPDATE, village_data)
+        return village_data

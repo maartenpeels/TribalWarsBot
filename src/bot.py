@@ -1,9 +1,11 @@
 import copy
 import logging
 
+from src.core.config import Config
 from src.core.file_manager import FileManager
 from src.core.input import Input
 from src.core.page_parser import PageParser
+from src.core.time_utils import TimeUtils
 from src.core.web_wrapper import WebWrapper
 from src.game.village import Village
 
@@ -13,7 +15,7 @@ logger = logging.getLogger("Bot")
 class Bot:
     villages: [Village] = []
 
-    def __init__(self, config):
+    def __init__(self, config: Config):
         self.config = config
         self.web = WebWrapper(self.config)
 
@@ -23,6 +25,17 @@ class Bot:
         logger.info("Bot started")
 
         self.villages = self.get_villages()
+
+        while True:
+            for village in self.villages:
+                village.run()
+                sleep_time_village = self.config.get("bot.delays.between_villages", 5)
+                logger.info(f"Sleeping for {sleep_time_village} seconds")
+                TimeUtils.sleep(sleep_time_village)
+
+            sleep_time_runs = self.config.get("bot.delays.between_runs", 180)
+            logger.info(f"Sleeping for {sleep_time_runs} seconds")
+            TimeUtils.sleep(sleep_time_runs)
 
     def get_villages(self):
         logger.info("Getting villages")
@@ -53,7 +66,7 @@ class Bot:
         self.config.set("villages", config_villages)
 
         # Create Village objects
-        return [Village(village_config, self.web) for village_config in config_villages]
+        return [Village(village_config, self.config, self.web) for village_config in config_villages]
 
     @staticmethod
     def setup_environment():

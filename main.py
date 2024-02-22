@@ -7,6 +7,8 @@ from src.core.config import Config
 
 coloredlogs.install(level=logging.INFO, fmt="%(asctime)s %(name)s %(levelname)s: %(message)s")
 logger = logging.getLogger("Main")
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 if __name__ == '__main__':
     config = Config()

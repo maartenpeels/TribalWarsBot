@@ -29,6 +29,17 @@ class FileManager:
         return os.path.exists(full_path)
 
     @staticmethod
+    def read_lines(file_path):
+        """Read a text file."""
+        full_path = os.path.join(FileManager.get_root_path(), file_path)
+
+        if not os.path.exists(full_path):
+            return None
+
+        with open(full_path, 'r') as file:
+            return [line.strip() for line in file.readlines()]
+
+    @staticmethod
     def load_yaml_file(file_path):
         """Load a yaml file."""
         full_path = os.path.join(FileManager.get_root_path(), file_path)
